@@ -135,17 +135,25 @@ class textProcessing:
                     for author in authors:
                         line = []
                         strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+                        is_publisher = False
 
                         for s in strings_in_brackets:
                             if s == "publisher":
-                                name = author.split(s)[0].strip().strip("(")
-                                if name[0]==',' and  name[1]==' ':
-                                    name = name[2:]
-                                line.append(name)
-                                all.append(line)
+                                is_publisher =True
+
+                        if is_publisher:
+                            fullname = author.split("publisher")[0].strip().strip("(")
+                            processedname = fullname.strip(',').strip(' ')
+                            
+                            line.append(processedname)
+                            line.append(fullname)
+                            all.append(line)
 
                     if row[5]:
-                        line2.append(row[5])
+                        fullname2 = row[5]
+                        processedname2 = row[5].strip(',').strip(' ')
+                        line2.append(processedname2)
+                        line2.append(fullname2)
                         all.append(line2)
                     
                 writer.writerows(all)
