@@ -40,15 +40,20 @@ class textProcessing:
                 if i not in index_list:
                     print(exported_publisher[i])
 
+    '''
+    This function is used to extract author information out of authors field 
+        #creating CSV for Author Table with fields: firstnames, surnames, gender, other info, fullname
+        #text processing: 1) using ";" to separate all authors 2)extract the information between brackets in each author string 
+                        3)if any string between brackets is not one of the roles identified at the beginning
 
-    #extract author information out of authors field
-    def get_all_author():
+    @inputPath: the original file 
+        # field extracted (field name with column number, index would be the (column number - 1))
+        # authors/4
+        # authors is used for getting authors 
+    '''
+    def get_all_author(inputPath, outputPath):
 
-        filePath = 'H:\Wanqi_Zhao_Stuff\Kath_Stuff\Data_Migration\Austlit_original.csv' 
-        testPath = 'H:\Wanqi_Zhao_Stuff\Kath_Stuff\Data_Migration\AustlitDataTest.csv'
-        outputPath = 'H:\Wanqi_Zhao_Stuff\Kath_Stuff\Data_Migration\Authors_with_brackets.csv'
-
-        with open(filePath,'r', encoding="utf8") as csvinput:
+        with open(inputPath,'r', encoding="utf8") as csvinput:
             with open(outputPath, 'w', encoding="utf8") as csvoutput:
                 writer = csv.writer(csvoutput, lineterminator='\n')
                 reader = csv.reader(csvinput)
@@ -56,21 +61,15 @@ class textProcessing:
                 roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer","publisher", "interviewer", "story teller", "director", "Visitor"]
                 all = []
                 row = next(reader)
-
         
                 for row in reader:
-                    #authors is the forth attri of each book
-                    authors = row[3]
-
-                    #process the authors field and separate into different roles
-                    authors = authors.split(";")
-                    
+                    authors = tetProcessing.separate_string_by(row[3])
                     for author in authors:
                         line = []
                         name = ""
                         firstname = ""
                         lastname = ""
-                        role = ""
+                        info = ""
 
                         strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
 
@@ -93,21 +92,18 @@ class textProcessing:
                             else:
                                 lastname = name
                             
+                            #only the string between brackets after the last name is recognised as other information
                             if "(" in lastname and ")" in lastname:
-                                role = lastname.split("(")[1].split(")")[0].strip()
-                                lastname = lastname.split(role)[0].strip("(")
+                                info = lastname.split("(")[1].split(")")[0].strip()
+                                lastname = lastname.split(info)[0].strip("(")
 
                             line.append(firstname)
                             line.append(lastname)
-                            line.append("")
-                            line.append(role)
+                            line.append("") #gender requires other program to analyse
+                            line.append(info)
                             line.append(name)
                             all.append(line)            
 
-                        #===============================creating CSV for Author Table=================================
-                        #===============================ID, first name, last name, gender, other info ================================    
-
-                                
                 writer.writerows(all)
     
     '''
