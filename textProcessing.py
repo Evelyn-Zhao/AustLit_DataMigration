@@ -129,7 +129,7 @@ class textProcessing:
 
                 for row in reader:
 
-                    authors = tetProcessing.separate_string_by(row[3])
+                    authors = textProcessing.separate_string_by(";", row[3])
                     line2 = [] 
 
                     for author in authors:
@@ -142,11 +142,10 @@ class textProcessing:
                                 is_publisher =True
 
                         if is_publisher:
-                            fullname = author.split("publisher")[0].strip().strip("(")
-                            processedname = fullname.strip(',').strip(' ')
+                            processedname = fullname.split("publisher")[0].strip().strip("(").strip(',').strip(' ')
                             
                             line.append(processedname)
-                            line.append(fullname)
+                            line.append(author)
                             all.append(line)
 
                     if row[5]:
@@ -185,15 +184,21 @@ class textProcessing:
                     authors = tetProcessing.separate_string_by(row[3])
                     for author in authors:
                         line = []
-                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(";", author)
+                        is_other = False
 
                         for s in strings_in_brackets:
                             if s in roles: 
-                                role = s
-                                name = author.split(s)[0].strip().strip("(")
-                                line.append(name)
-                                line.append(role)
-                                all.append(line)
+                                is_other = True
+
+                        if is_other:
+                            role = s
+                            name = author.split(s)[0].strip().strip("(")
+                            
+                            line.append(name)
+                            line.append(role)
+                            line.append(author)
+                            all.append(line)
                             
                 writer.writerows(all)
     
