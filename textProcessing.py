@@ -53,58 +53,76 @@ class textProcessing:
     '''
     def get_all_author(inputPath, outputPath):
 
+        roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer","publisher", "interviewer", "story teller", "director", "Visitor"]
+        d = {}
+
         with open(inputPath,'r', encoding="utf8") as csvinput:
-            with open(outputPath, 'w', encoding="utf8") as csvoutput:
-                writer = csv.writer(csvoutput, lineterminator='\n')
-                reader = csv.reader(csvinput)
-
-                roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer","publisher", "interviewer", "story teller", "director", "Visitor"]
-                all = []
-                row = next(reader)
+            
+            reader = csv.reader(csvinput)
+            all = []
+            row = next(reader)
         
-                for row in reader:
-                    authors = tetProcessing.separate_string_by(row[3])
-                    for author in authors:
-                        line = []
-                        name = ""
-                        firstname = ""
-                        lastname = ""
-                        info = ""
-
-                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
-
-                        if strings_in_brackets:
-                            is_other = False
-                            for s in strings_in_brackets:
-                                if s in roles:
-                                    is_other = True
-                            if not is_other:
-                                # as can only extract the string with whitespace in between or pure characters 
-                                name = author.strip()
-                        else:
-                            if author != "":    
-                                name = author.strip()
+            for row in reader:
+                
+                authors = textProcessing.separate_string_by(";", row[3])
+                for author in authors:
                         
-                        if name:
-                            if "," in name:
-                                firstname = name.split(",")[0].strip()
-                                lastname = name.split(",")[1].strip()
-                            else:
-                                lastname = name
+                    name = ""
+                    firstname = ""
+                    lastname = ""
+                    info = ""
+
+                    strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+
+                    if strings_in_brackets:
+                        is_other = False
+                        for s in strings_in_brackets:
+                            if s in roles:
+                                is_other = True
+                        if not is_other:
+                            # as can only extract the string with whitespace in between or pure characters 
+                            name = author.strip()
+                    else:
+                        if author != "":    
+                            name = author.strip()
+                        
+                    if name:
+                        if "," in name:
+                            firstname = name.split(",")[0].strip()
+                            lastname = name.split(",")[1].strip()
+                        else:
+                            lastname = name
                             
-                            #only the string between brackets after the last name is recognised as other information
-                            if "(" in lastname and ")" in lastname:
-                                info = lastname.split("(")[1].split(")")[0].strip()
-                                lastname = lastname.split(info)[0].strip("(")
+                        #only the string between brackets after the last name is recognised as other information
+                        if "(" in lastname and ")" in lastname:
+                            info = lastname.split("(")[1].split(")")[0].strip()
+                            lastname = lastname.split(info)[0].strip("(")
 
-                            line.append(firstname)
-                            line.append(lastname)
-                            line.append("") #gender requires other program to analyse
-                            line.append(info)
-                            line.append(name)
-                            all.append(line)            
+                        key = firstname+"|"+lastname+"|"+info
+                        if key in d.keys():
+                            if author not in d[key]:
+                                d[key].append(author)
+                        else:
+                            d[key] = [author] 
 
-                writer.writerows(all)
+
+        with open(outputPath, 'w', encoding="utf8") as csvoutput:
+            writer = csv.writer(csvoutput, lineterminator='\n')
+            all = []    
+            id = 1
+
+            for k in d.keys():
+                line = []       
+                line.append(id)
+                line.append(k.split("|")[0])
+                line.append(k.split("|")[1])
+                line.append("") #gender requires other program to analyse
+                line.append(k.split("|")[2])
+                line.append(d[k])
+                all.append(line) 
+                id = id+1           
+
+            writer.writerows(all)
     
     '''
     This function is used to get all publishers from the authors field and the publisher field
@@ -119,43 +137,55 @@ class textProcessing:
     '''
     def get_all_publishers(inputPath, outputPath):
 
+        d = {}
         with open(inputPath,'r', encoding="utf8") as csvinput:
-            with open(outputPath, 'w', encoding="utf8") as csvoutput:
-                writer = csv.writer(csvoutput, lineterminator='\n')
-                reader = csv.reader(csvinput)
+            
+            reader = csv.reader(csvinput)     
+            row = next(reader)
 
-                all = []
-                row = next(reader)
+            for row in reader:
+                authors = textProcessing.separate_string_by(";", row[3])
 
-                for row in reader:
+                for author in authors:
+                    strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+                    is_publisher = False
+                    processedname = ""
+                    fullname = ""
 
-                    authors = textProcessing.separate_string_by(";", row[3])
-                    line2 = [] 
+                    for s in strings_in_brackets:
+                        if s == "publisher":
+                            is_publisher =True
 
-                    for author in authors:
-                        line = []
-                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
-                        is_publisher = False
+                    if is_publisher:
+                        key = author.split("publisher")[0].strip().strip("(").strip(',').strip(' ')
+                        
+                        if key in d.keys():
+                            if author not in d[key]:
+                                d[key].append(author)
+                        else:
+                            d[key] = [author] 
 
-                        for s in strings_in_brackets:
-                            if s == "publisher":
-                                is_publisher =True
+                if row[5]:
+                    key2 = row[5].strip().strip(',').strip(' ')
 
-                        if is_publisher:
-                            processedname = fullname.split("publisher")[0].strip().strip("(").strip(',').strip(' ')
-                            
-                            line.append(processedname)
-                            line.append(author)
-                            all.append(line)
+                    if key2 in d.keys():
+                        if row[5] not in d[key2]:
+                            d[key2].append(row[5])
+                    else:
+                        d[key2] = [row[5]] 
 
-                    if row[5]:
-                        fullname2 = row[5]
-                        processedname2 = row[5].strip(',').strip(' ')
-                        line2.append(processedname2)
-                        line2.append(fullname2)
-                        all.append(line2)
-                    
-                writer.writerows(all)
+        with open(outputPath, 'w', encoding="utf8") as csvoutput:
+            writer = csv.writer(csvoutput, lineterminator='\n')
+            all = []
+            id = 1
+            for k in d.keys():
+                line = []
+                line.append(id)
+                line.append(k)
+                line.append(d[k])
+                all.append(line)
+                id = id+1
+            writer.writerows(all)
     
     '''
     This function is used to extract the information of all other roles
@@ -171,36 +201,50 @@ class textProcessing:
 
     def get_all_otherRoles(inputPath, outputPath):
 
+        roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer", "interviewer", "story teller", "director", "Visitor"]
+        d = {}
+
         with open(inputPath,'r', encoding="utf8") as csvinput:
-            with open(outputPath, 'w', encoding="utf8") as csvoutput:
-                writer = csv.writer(csvoutput, lineterminator='\n')
-                reader = csv.reader(csvinput)
-
-                roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer", "interviewer", "story teller", "director", "Visitor"]
-                all = []
-                row = next(reader)                #read from the orginal file
+          
+            reader = csv.reader(csvinput)
+            row = next(reader)                #read from the orginal file
                 
-                for row in reader:
-                    authors = tetProcessing.separate_string_by(row[3])
-                    for author in authors:
-                        line = []
-                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(";", author)
-                        is_other = False
+            for row in reader:
+                authors = textProcessing.separate_string_by(";", row[3])
+                for author in authors:
+                    line = []
+                    strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+                    is_other = False
 
-                        for s in strings_in_brackets:
-                            if s in roles: 
-                                is_other = True
+                    for s in strings_in_brackets:
+                        if s in roles: 
+                            is_other = True
 
-                        if is_other:
-                            role = s
-                            name = author.split(s)[0].strip().strip("(")
-                            
-                            line.append(name)
-                            line.append(role)
-                            line.append(author)
-                            all.append(line)
-                            
-                writer.writerows(all)
+                    if is_other:
+                        role = s
+                        name = author.split(s)[0].strip().strip("(")
+                        key = name+"|"+role
+                        
+                        #all full string will be striped with the same pattern
+                        if key in d:
+                            if author not in d[key]:
+                                d[key].append(author)
+                        else:
+                            d[key] = [author]   
+
+        with open(outputPath, 'w', encoding="utf8") as csvoutput:
+            writer = csv.writer(csvoutput, lineterminator='\n') 
+            all = []   
+            id = 1
+            for k in d.keys():
+                line = []
+                line.append(id)
+                line.append(k.split("|")[0])
+                line.append(k.split("|")[1])
+                line.append(d[k])
+                all.append(line)
+                id = id+1
+            writer.writerows(all)
     
     '''
     this function is used to extract all work information 
@@ -229,10 +273,14 @@ class textProcessing:
                     line.append(row[16])
                     line.append(row[3])
                     all.append(line)
-                            
+             
                 writer.writerows(all)
 
     '''
+    This function is used to create Work/Author Junction Table:
+        #Read in all authors in a list with index indicating the ids
+        #Go through each work: get the authors field, separate all the names
+
     @inputPath1: read in all the authors
         # read in all author names with ids -- dict would be the data structure, key -- author, value -- ids
     @inputPath2: read in all the work
@@ -241,61 +289,67 @@ class textProcessing:
     def get_all_wa(inputPath1, inputPath2, outputPath):
         
         roles = ["translator", "compiler", "editor", "illustrator", "creator", "composer","publisher", "interviewer", "story teller", "director", "Visitor"]
-        authors_id = []
+        authors = {}
         wid_authors = {}
         all = []
         
+        #read in the author data: fullstring representation and id 
         with open(inputPath1,'r', encoding="utf8") as csvinput:
             reader = csv.reader(csvinput)
-
+            id = 1
             for row in reader:
-                author_name = row[4]
-                authors_id.append(author_name)
-                  
-
+                authors[id] = row[5]
+                id = id+1
+        
+        #traverse all the work, and use fullstring to identify the suthor id
         with open(inputPath2,'r', encoding="utf8") as csvinput2:
-            with open(outputPath, 'w', encoding="utf8") as csvoutput:
-                writer = csv.writer(csvoutput, lineterminator='\n')
-                reader2 = csv.reader(csvinput2)
-                work_id = 0
+            reader2 = csv.reader(csvinput2)
+            work_id = 0
 
-                for row in reader2:
+            for row in reader2:
+                work_id = work_id+1
+                if len(row)>4:
+                    authors = row[4]
+                    authors = authors.split(";")
 
-                    work_id = work_id+1
-                    if len(row)>3:
-                        authors = row[4]
-                        authors = authors.split(";")
-
-                        for author in authors:
+                    for author in authors:
                             
-                            line = []
-                            if "(" in author and ")" in author: 
+                        line = []
+                        strings_in_brackets = textProcessing.get_string_matched_with_pattern(author)
+                        is_other = False
+
+                        for s in strings_in_brackets:
+                            if s in roles: 
+                                is_other = True
+                            
+                        if "(" in author and ")" in author: 
                                     
-                                name = author.split("(")[0].strip()
-                                role = author.split("(")[1]
-                                role = role.split(")")[0].strip()
+                            name = author.split("(")[0].strip()
+                            role = author.split("(")[1]
+                            role = role.split(")")[0].strip()
                         
-                                #===============================creating work and author junction Table=================================
-                                #===============================ID, work id and author id  ================================
-                                if role not in roles:
-                                        
-                                    if name in authors_id:
-                                        line.append(work_id)
-                                        line.append(authors_id.index(name))
+                            #===============================creating work and author junction Table=================================
+                            #===============================ID, work id and author id  ================================
+                            if role not in roles:
+                                if name in authors_id:
+                                    line.append(work_id)
+                                    line.append(authors_id.index(name))
                             
-                                        all.append(line)
+                                    all.append(line)
                             
-                            else:
-                                if author != "":
-                                    if author in authors_id:
-                                        line.append(work_id)
-                                        line.append(authors_id.index(author)+1)
+                        else:
+                            if author != "":
+                                if author in authors_id:
+                                    line.append(work_id)
+                                    line.append(authors_id.index(author)+1)
                             
-                                        all.append(line)
+                                    all.append(line)
 
 
-                        
-                writer.writerows(all)
+        with open(outputPath, 'w', encoding="utf8") as csvoutput:
+            writer = csv.writer(csvoutput, lineterminator='\n')                 
+            
+            writer.writerows(all)
 
 
     def get_all_mani():
@@ -420,4 +474,4 @@ class textProcessing:
         return full_string.split(delimiter)
 
 
-        
+#    def get_author_info(author, ):
