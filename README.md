@@ -13,7 +13,7 @@
 
 ### 2. Functions 
 ----
-  - Generating the full information of work 
+  - 2.1 Function: Generating the full information of work 
     - Input: Austlit_original.csv 
     - Process: Extracting cnumber and znumber from austlit link 
     - Ouput: Output.csv 
@@ -50,4 +50,7 @@
 
 ### 3. Results:
 ----
+| Raw      | Author   | Publisher| Other    |Work      |WA        |Mani      |
+|----------|----------|----------|----------|----------|----------|----------|
+|931754    |90556     |24042     | 23795    |614510    |          |614510    |
 
