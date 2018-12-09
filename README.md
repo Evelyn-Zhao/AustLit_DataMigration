@@ -21,7 +21,30 @@
 #### Process: Extracting authors field, spliting the string by ";"
 #### Output: Author.csv
 
-#### 2.3 Function: Generating the csv file for creating Author table
+#### 2.3 Function: Generating the csv file for creating Publisher table
 #### Input: Austlit_original.csv 
-#### Process: Extracting authors field, spliting the string by ";"
-#### Output: Author.csv
+#### Process: Extracting both publisher and authors field. In authors field, there is a role named publisher
+#### Output: Publisher.csv
+
+#### 2.4 Function: Generating the csv file for creating Others table
+#### Input: Austlit_original.csv 
+#### Process: Extracting authors field, spliting the string by ";". Using the string in brackets to justify the role.
+#### Output: Other.csv
+
+#### 2.5 Function: Generating the csv file for creating Work table
+#### Input: Output.csv 
+#### Process: Extracting title, form, genre and cnumber, authors field
+#### Output: Work.csv
+
+#### 2.6 Function: Generating the csv file for creating Work/Author Junction table
+#### Input: Work.csv, Author.csv 
+#### Process: Read in all the author, and traverse all the work to find out all the author and work pairs
+#### Output: WA_Junction.csv
+
+#### 2.7 Function: Generating the csv file for creating Manifestation table
+#### Input: Work.csv, Publisher.csv, Other.csv 
+#### Process: Read in 
+#### Output: Manifestation.csv
+
+### Results:
+####
