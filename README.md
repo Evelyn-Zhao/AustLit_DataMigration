@@ -4,12 +4,15 @@
 
 ### 1. Input and ouput files
 ----
-  - Austlit_original.csv (Containing following fields: rid; title	altertitle; authors; place; publisher; datepublished; type; forms; genres; issue pagenumber; firstline; numberissues; isbns; austlitlink)
-  - Output.csv (Containing following fields: rid; title	altertitle; authors; place; publisher; datepublished; type; forms; genres; issue pagenumber; firstline; numberissues; isbns; austlitlink; cnumber; znumber)
+  - Austlit_original.csv (Containing following fields: rid; title; altertitle; authors; place; publisher; datepublished; type; forms; genres; issue pagenumber; firstline; numberissues; isbns; austlitlink)
+  - Output.csv (Containing following fields: rid; title; altertitle; authors; place; publisher; datepublished; type; forms; genres; issue pagenumber; firstline; numberissues; isbns; austlitlink; cnumber; znumber)
   - Work.csv: title, forms, genres, cnumber, authors, work id
   - Author.csv: author_id, author firstnames, author surname, author gender, author info, author fullstring representations
   - Publisher.csv: pub_id; pub_name; pub fullstring representations
   - Other.csv: other_id, other_name, other_role, other fullstring representations
+  - Manifestation.csv: alter title; type; issue detail; page number; isbns; pub year; pub place; work id; pub id
+  - WA_Junction.csv: wa_id; work_id; author_id
+  - MO_Junction.csv: mo_id; mani_id; other_id
 
 ### 2. Functions 
 ----
