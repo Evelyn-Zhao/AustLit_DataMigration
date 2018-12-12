@@ -45,12 +45,12 @@
     
   - 2.7 Function: Generating the csv file for creating Manifestation table
     - Input: Work.csv, Publisher.csv, Other.csv 
-    - Process: Read in 
+    - Process: Read in all publishers, other roles and work, and traverse all manifestations to find out corresponding foreign keys 
     - Output: Manifestation.csv
 
 ### 3. Results:
 ----
 | Raw      | Author   | Publisher| Other    |Work      |WA        |Mani      |
 |----------|----------|----------|----------|----------|----------|----------|
-|931754    |90556     |24042     | 23795    |614510    |          |614510    |
+|931754    |90556     |24042     | 23795    |614510    | 587580   |614510    |
 
