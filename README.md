@@ -47,10 +47,15 @@
     - Input: Work.csv, Publisher.csv, Other.csv 
     - Process: Read in all publishers, other roles and work, and traverse all manifestations to find out corresponding foreign keys 
     - Output: Manifestation.csv
-
+    
+  - 2.8 Function: Generating the csv file for creating Manifestation_Other Junction table
+    - Input: Manifestation.csv 
+    - Process: Read in all manifestation with its other field, and traverse all manifestations to find out corresponding foreign keys 
+    - Output: Mo_Junction.csv
+    
 ### 3. Results:
 ----
-| Raw      | Author   | Publisher| Other    |Work      |WA        |Mani      |
-|----------|----------|----------|----------|----------|----------|----------|
-|931754    |90556     |24042     | 23795    |614510    | 587579   |614510    |
+| Raw      | Author   | Publisher| Other    |Work      |WA        |Mani      |MO        |
+|----------|----------|----------|----------|----------|----------|----------|----------|
+|931754    |90556     |24042     | 23795    |614510    | 587579   |614510    |79013     |
 
